@@ -283,14 +283,10 @@ End Namespace
 
 上記の命名規則は、以下のMicrosoft公式ドキュメントで推奨されている記述方法に基づいています。
 
-* **C# のコーディング規則（識別子名・スタイル標準）**
-  `https://learn.microsoft.com/ja-jp/dotnet/csharp/fundamentals/coding-style/identifier-names`
+* [C# のコーディング規則（識別子名・スタイル標準）](https://learn.microsoft.com/ja-jp/dotnet/csharp/fundamentals/coding-style/identifier-names)
   * ※「Camel 形式」の項目に、private または internal フィールドには `_camelCase` を使用する旨が明記されています。
-* **.NET クラスデザインガイドライン（大文字と小文字の規則）**
-  `https://learn.microsoft.com/ja-jp/dotnet/standard/design-guidelines/capitalization-conventions`
+* [.NET クラスデザインガイドライン（大文字と小文字の規則）](https://learn.microsoft.com/ja-jp/dotnet/standard/design-guidelines/capitalization-conventions)
   * ※PascalCase / camelCase の明確な定義と使い分けの基本となる根拠ページです。
-* **.NET クラスデザインガイドライン（命名規則トップ）**
-  `https://learn.microsoft.com/ja-jp/dotnet/standard/design-guidelines/naming-guidelines`
+* [.NET クラスデザインガイドライン（命名規則トップ）](https://learn.microsoft.com/ja-jp/dotnet/standard/design-guidelines/naming-guidelines)
   * ※タイプ、メソッド、プロパティなどの総合的な命名規則が網羅されています。
-* **System.DateTime（DateTime.cs）**
-  `https://github.com/dotnet/dotnet/blob/b0f34d51fccc69fd334253924abd8d6853fad7aa/src/runtime/src/libraries/System.Private.CoreLib/src/System/DateTime.cs`
+* [System.DateTime（DateTime.cs）](https://github.com/dotnet/dotnet/blob/b0f34d51fccc69fd334253924abd8d6853fad7aa/src/runtime/src/libraries/System.Private.CoreLib/src/System/DateTime.cs)
