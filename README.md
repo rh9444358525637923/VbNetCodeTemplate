@@ -290,3 +290,150 @@ End Namespace
 * [.NET クラスデザインガイドライン（命名規則トップ）](https://learn.microsoft.com/ja-jp/dotnet/standard/design-guidelines/naming-guidelines)
   * ※タイプ、メソッド、プロパティなどの総合的な命名規則が網羅されています。
 * [System.DateTime（DateTime.cs）](https://github.com/dotnet/dotnet/blob/b0f34d51fccc69fd334253924abd8d6853fad7aa/src/runtime/src/libraries/System.Private.CoreLib/src/System/DateTime.cs)
+
+<br>
+
+---
+
+# .editorconfig 設定
+
+## 1. .editorconfig の概要
+`.editorconfig` は、コードのインデント、改行コード、コードスタイル、および名前付け規則（命名規則）をプロジェクト単位で一元管理し、開発者間で統一するための設定ファイルです。Visual Studio はこのファイルを自動的に読み込み、リアルタイムでの警告表示や、クイックアクション（`Ctrl` + `.`）によるコードの自動修正機能を提供します。
+
+---
+
+## 2. .editorconfig 共通・主要プロパティ一覧
+
+### ① 基本的なコードスタイル（全言語共通）
+ファイルの物理的なフォーマットを規定するプロパティです。
+
+* **`root`** (`true` / `false`): 
+  このファイルがあるフォルダを最上位（ルート）として宣言します。`true` に設定すると、これより上の階層にある設定ファイルを探しに行くのを停止します。
+* **`indent_style`** (`space` / `tab`): 
+  インデントにスペースを使用するか、タブ文字を使用するかを指定します。
+* **`indent_size`** (整数): 
+  インデント1段分に相当するスペースの数を指定します（`indent_style = space` の際に有効）。
+* **`tab_width`** (整数): 
+  タブ文字1つ分に相当する幅をスペースの数で指定します。
+* **`end_of_line`** (`crlf` / `lf` / `cr`): 
+  行末の改行コードを指定します。Windows環境における .NET 開発では `crlf` が標準的です。
+* **`insert_final_newline`** (`true` / `false`): 
+  ファイルの末尾に必ず空行（改行）を1行挿入するかどうかを制御します。
+
+### ② .NET 共通のコードスタイル（言語規則）
+クラスメンバーへのアクセス方法や、修飾子の付与基準など、コードの記述スタイルを制御します。
+*(※ 各設定値の後ろに `:warning` や `:suggestion` を付与することで、違反時の重要度を制御できます)*
+
+* **`dotnet_style_qualification_for_field`** (`true` / `false`): 
+  フィールドへのアクセス時に `Me.` (VB.NET) や `this.` (C#) の記述を必須とするか、省略するかを設定します。
+* **`dotnet_style_qualification_for_property`** (`true` / `false`): 
+  プロパティへのアクセス時に `Me.` や `this.` の記述を必須とするか、省略するかを設定します。
+* **`dotnet_style_qualification_for_method`** (`true` / `false`): 
+  メソッド呼び出し時に `Me.` や `this.` の記述を必須とするか、省略するかを設定します。
+* **`dotnet_style_readonly_field`** (`true` / `false`): 
+  コンストラクタ以外で変更されないフィールドに対し、`ReadOnly`（C#は `readonly`）修飾子の付与を推奨するかどうかを制御します。
+* **`dotnet_style_require_accessibility_modifiers`** (`always` / `never` / `for_non_interface_members`): 
+  `Private` や `Public` などのアクセス修飾子を明示的に記述させるかどうかを設定します。
+
+### ③ 命名規則（Naming Styles）に関するカスタムプロパティ
+独自のルールを組み立てるための仕組みであり、以下の3つの要素を組み合わせて定義します。
+
+* **`dotnet_naming_rule.[ルール名].[symbols / style / severity]`**: 
+  特定のシンボル（対象）に、どのスタイルと重要度を紐づけるかを定義するプロパティです。
+* **`dotnet_naming_symbols.[シンボル名].[applicable_kinds / applicable_accessibilities / required_modifiers]`**: 
+  ルールを適用したい要素の種類（`class`, `property`, `field` など）やアクセス権（`private`, `public` など）を絞り込むプロパティです。
+* **`dotnet_naming_style.[スタイル名].[capitalization / required_prefix / required_suffix]`**: 
+  大文字小文字のケース（`pascal_case`, `camel_case`）や、必須とする接頭辞・接尾辞を定義するプロパティです。
+
+---
+
+## 3. サンプル設定コード（VB.NET 向けカスタム設定）と各行解説
+[cite_start][cite: 1][cite_start]提示された特定のコードルールに準拠した `.editorconfig` の実設定例です [cite: 1]。各設定ブロックおよび行が持つ意味の詳細をコメントとあわせて記載しています。
+
+```ini
+# =====================================================================
+# 最上位の設定ファイルであることを宣言
+# =====================================================================
+root = true 
+
+# =====================================================================
+# すべてのファイルに共通するインデント・改行の定義
+# =====================================================================
+[*]
+indent_size = 4 
+indent_style = space 
+tab_width = 4 
+end_of_line = crlf 
+insert_final_newline = false 
+
+# =====================================================================
+# VB.NET (*.vb) 専用の命名規則（コーディング規約）定義
+# =====================================================================
+[*.vb] 
+
+#### ① 名前付けルールの割り当て (Rules) ####
+# 「どのシンボル（対象）」に「どの表現形式」を適用し、「どの重要度」で警告するかを紐づけます。
+# ※ 判定は上から順に行われるため、最も条件が厳しいプライベートフィールドを最上部に配置します。
+
+# ルール1: プライベートフィールドは「_camelCase」にする
+dotnet_naming_rule.vb_private_fields_should_be_underscore_camel.symbols = vb_private_field_symbols 
+dotnet_naming_rule.vb_private_fields_should_be_underscore_camel.style = underscore_camel_case_style 
+dotnet_naming_rule.vb_private_fields_should_be_underscore_camel.severity = warning 
+
+# ルール2: クラス、構造体、列挙型、プロパティ、メソッド、定数は「PascalCase」にする
+dotnet_naming_rule.vb_types_and_members_should_be_pascal_case.symbols = vb_pascal_case_symbols 
+dotnet_naming_rule.vb_types_and_members_should_be_pascal_case.style = pascal_case_style 
+dotnet_naming_rule.vb_types_and_members_should_be_pascal_case.severity = warning 
+
+# ルール3: ローカル変数およびメソッドの引数は「camelCase」にする
+dotnet_naming_rule.vb_locals_and_parameters_should_be_camel_case.symbols = vb_camel_case_symbols 
+dotnet_naming_rule.vb_locals_and_parameters_should_be_camel_case.style = camel_case_style 
+dotnet_naming_rule.vb_locals_and_parameters_should_be_camel_case.severity = warning 
+
+
+#### ② 対象となる要素の定義 (Symbols) ####
+# ルールが適用されるコード上の具体的な「対象（シンボル）」を定義します。
+
+# 対象1: アクセス修飾子が private または friend のフィールド（変数）
+dotnet_naming_symbols.vb_private_field_symbols.applicable_kinds = field 
+dotnet_naming_symbols.vb_private_field_symbols.applicable_accessibilities = private, friend 
+
+# 対象2: クラス、構造体、Enum、プロパティ、メソッド、または「定数(Const)」であるフィールド
+dotnet_naming_symbols.vb_pascal_case_symbols.applicable_kinds = class, struct, enum, property, method, field 
+dotnet_naming_symbols.vb_pascal_case_symbols.applicable_accessibilities = * 
+dotnet_naming_symbols.vb_pascal_case_symbols.required_modifiers = const 
+
+# 対象3: ローカル変数（メソッド内部の変数）および パラメーター（引数）
+dotnet_naming_symbols.vb_camel_case_symbols.applicable_kinds = local, parameter 
+
+
+#### ③ スタイルの具体的な定義 (Styles) ####
+# 変数名などの「表現形式（ケース）」の具体的な形を定義します。
+
+# スタイル1: 先頭にアンダースコア（_）を必須とし、続く文字をキャメルケース（小文字始まり）にする
+dotnet_naming_style.underscore_camel_case_style.capitalization = camel_case 
+dotnet_naming_style.underscore_camel_case_style.required_prefix = _ 
+
+# スタイル2: パスカルケース（大文字始まり、単語の区切りも大文字）にする
+dotnet_naming_style.pascal_case_style.capitalization = pascal_case 
+
+# スタイル3: キャメルケース（小文字始まり、単語の区切りは大文字）にする（接頭辞なし）
+dotnet_naming_style.camel_case_style.capitalization = camel_case 
+```
+
+### この設定ファイルを導入する効果
+* **自動検知と警告:** 開発者が `Private test As String` や `Dim Test As Integer` と記述した際、即座に Visual Studio 画面上に緑色の波線で警告（`severity = warning`）を表示します。
+* **一括クイック修正:** 違反箇所にカーソルを合わせ、`Ctrl` + `.` を押下することで、それぞれ `_test` や `test` へと規約に沿った適切な命名にワンクリックで自動変換を行うことが可能です。
+
+---
+
+## 4. 参考リソース・公式ドキュメント
+さらに詳細な仕様や追加の設定項目については、以下の公式ドキュメントを参照してください。
+
+* [Microsoft Learn: Visual Studio で移植可能なカスタムのエディター設定を作成する](https://learn.microsoft.com/ja-jp/visualstudio/ide/create-portable-custom-editor-options?view=visualstudio)
+  * Visual Studio における EditorConfig の基本的な使い方、ファイル生成、適用優先順位に関する公式チュートリアルです。
+* [Microsoft Learn: .NET のコード分析スタイル規則のドキュメント](https://learn.microsoft.com/ja-jp/dotnet/fundamentals/code-analysis/style-rules/?view=visualstudio)
+  * 今回定義した命名規則の他にも、`Me.` や `this.` の制限、波かっこ、パターンマッチングといった .NET 固有のすべてのコードスタイル規則プロパティが網羅されています。
+* [EditorConfig 公式サイト: サンプルファイル解説（英語）](https://editorconfig.org/#example-file)
+  * プログラミング言語を問わない、EditorConfig 標準のファイルフォーマット（インデントや改行コード、文字コード設定など）の基本仕様と具体例が掲載されています。
+```
