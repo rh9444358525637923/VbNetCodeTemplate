@@ -1,0 +1,53 @@
+
+# 上位ディレクトリから .editorconfig 設定を継承する場合は、以下の行を削除します
+root = true
+
+[*.vb]
+
+# インデントと間隔
+indent_size = 4
+indent_style = space
+tab_width = 4
+
+# 改行設定
+end_of_line = crlf
+insert_final_newline = false
+
+[*.vb]
+
+#### ① 名前付けルールの割り当て (Rules) ####
+
+# 1. プライベートフィールド ➡ _camelCase
+dotnet_naming_rule.vb_private_fields_should_be_underscore_camel.symbols = vb_private_field_symbols
+dotnet_naming_rule.vb_private_fields_should_be_underscore_camel.style = underscore_camel_case_style
+dotnet_naming_rule.vb_private_fields_should_be_underscore_camel.severity = warning
+
+# 2. クラス・構造体・Enum、プロパティ、定数 ➡ PascalCase
+dotnet_naming_rule.vb_types_and_members_should_be_pascal_case.symbols = vb_pascal_case_symbols
+dotnet_naming_rule.vb_types_and_members_should_be_pascal_case.style = pascal_case_style
+dotnet_naming_rule.vb_types_and_members_should_be_pascal_case.severity = warning
+
+# 3. ローカル変数・メソッド引数 ➡ camelCase
+dotnet_naming_rule.vb_locals_and_parameters_should_be_camel_case.symbols = vb_camel_case_symbols
+dotnet_naming_rule.vb_locals_and_parameters_should_be_camel_case.style = camel_case_style
+dotnet_naming_rule.vb_locals_and_parameters_should_be_camel_case.severity = warning
+
+
+#### ② 対象となる要素の定義 (Symbols) ####
+dotnet_naming_symbols.vb_private_field_symbols.applicable_kinds = field
+dotnet_naming_symbols.vb_private_field_symbols.applicable_accessibilities = private, friend
+
+dotnet_naming_symbols.vb_pascal_case_symbols.applicable_kinds = class, struct, enum, property, method, field
+dotnet_naming_symbols.vb_pascal_case_symbols.applicable_accessibilities = *
+dotnet_naming_symbols.vb_pascal_case_symbols.required_modifiers = const
+
+dotnet_naming_symbols.vb_camel_case_symbols.applicable_kinds = local, parameter
+
+
+#### ③ スタイルの具体的な定義 (Styles) ####
+dotnet_naming_style.underscore_camel_case_style.capitalization = camel_case
+dotnet_naming_style.underscore_camel_case_style.required_prefix = _
+
+dotnet_naming_style.pascal_case_style.capitalization = pascal_case
+
+dotnet_naming_style.camel_case_style.capitalization = camel_case
